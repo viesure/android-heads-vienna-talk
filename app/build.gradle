@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'devicefarm'
+
+// Load store config properties (ONLY for our internal Beta distribution):
+def awsProperties = new Properties()
+awsProperties.load(new FileInputStream(file("./aws.properties")))
+
+devicefarm {
+    // Required. The Project must already exist. You can create a project in the AWS console.
+    // Question: You can add the same project name duplicated is it possible to use the arn?
+    projectName "AndroidHeads"
+
+    devicePool "AndroidPool"
+
+    // Required. You must specify either accessKey and secretKey OR roleArn. roleArn takes precedence.
+    authentication {
+        accessKey awsProperties['access_key_id']
+        secretKey awsProperties['access_key_secret']
+    }
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "io.viesure.awsdevicefarmespresso"
+        minSdkVersion 18
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.android.material:material:1.1.0'
+
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.2.0'
+
+    implementation 'com.airbnb.android:lottie:3.4.0'
+}
